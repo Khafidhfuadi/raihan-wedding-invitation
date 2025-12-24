@@ -5,7 +5,7 @@ const Etiquette = () => {
   const etiquetteItems = [
     {
       icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.38 3.4a1.6 1.6 0 0 1 .58 2.4l-1.9 2.9A4 4 0 0 1 15.6 10.5H8.4a4 4 0 0 1-3.47-1.8l-1.9-2.9a1.6 1.6 0 0 1 .58-2.4 1.62 1.62 0 0 1 2.4.58l.7 1.07h10.4l.7-1.07a1.62 1.62 0 0 1 2.39-.58z"></path><path d="M12 10.5V21"></path><path d="M8 21h8"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       ),
       text: "Memakai pakaian yang sopan dan menutup aurat"
     },
@@ -17,7 +17,7 @@ const Etiquette = () => {
     },
     {
       icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="M12 15l-3 3a2.2 2.2 0 0 0-.09 2.91c.84 1.29 5 2 5 2s-.5-3.74-2-5a2.2 2.2 0 0 0-2.91-.09z"></path><path d="M12 15a6 6 0 0 0 6-6c0-1-1-2-2-2s-2 1-2 2"></path><path d="M16 9c1 0 2-1 2-2s-1-2-2-2-2 1-2 2"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
       ),
       text: "Mendoakan kedua mempelai"
     },
@@ -48,64 +48,64 @@ const Etiquette = () => {
 
       <div className="container mx-auto px-6 relative z-10 max-w-4xl text-center">
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="mb-12"
         >
-            <motion.h2 
-              initial={{ scale: 0.9 }}
-              whileInView={{ scale: 1 }}
-              transition={{ duration: 0.6, type: "spring" }}
-              className="font-pinyon text-5xl md:text-6xl mb-6 text-accent-wine"
-            >
-              Adab Walimah
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="font-dm-sans text-main-red/80 max-w-lg mx-auto leading-relaxed"
-            >
-                Tanpa mengurangi rasa hormat, ada hal-hal dalam adab seorang muslim ketika menghadiri walimah yang harus diperhatikan:
-            </motion.p>
+          <motion.h2
+            initial={{ scale: 0.9 }}
+            whileInView={{ scale: 1 }}
+            transition={{ duration: 0.6, type: "spring" }}
+            className="font-pinyon text-5xl md:text-6xl mb-6 text-accent-wine"
+          >
+            Adab Walimah
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="font-dm-sans text-main-red/80 max-w-lg mx-auto leading-relaxed"
+          >
+            Tanpa mengurangi rasa hormat, ada hal-hal dalam adab seorang muslim ketika menghadiri walimah yang harus diperhatikan:
+          </motion.p>
         </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 mb-16">
-            {etiquetteItems.map((item, index) => (
-                <motion.div 
-                    key={index}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.5, type: "spring" }}
-                    viewport={{ once: true }}
-                    className="flex flex-col items-center group cursor-default"
-                >
-                    <motion.div 
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        className="w-20 h-20 md:w-24 md:h-24 bg-accent-wine/80 rounded-full flex items-center justify-center text-vanilla mb-4 shadow-lg group-hover:bg-accent-wine transition-colors duration-300"
-                    >
-                        {item.icon}
-                    </motion.div>
-                    <p className="font-dm-sans text-sm text-main-red font-medium leading-snug max-w-[150px]">
-                        {item.text}
-                    </p>
-                </motion.div>
-            ))}
+          {etiquetteItems.map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.5, type: "spring" }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center group cursor-default"
+            >
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                className="w-20 h-20 md:w-24 md:h-24 bg-accent-wine/80 rounded-full flex items-center justify-center text-vanilla mb-4 shadow-lg group-hover:bg-accent-wine transition-colors duration-300"
+              >
+                {item.icon}
+              </motion.div>
+              <p className="font-dm-sans text-sm text-main-red font-medium leading-snug max-w-[150px]">
+                {item.text}
+              </p>
+            </motion.div>
+          ))}
         </div>
 
-        <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            viewport={{ once: true }}
-            className="bg-accent-wine/10 border-l-4 border-accent-wine p-6 rounded-r-xl text-left md:text-center max-w-2xl mx-auto hover:bg-accent-wine/20 transition-colors duration-300"
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+          viewport={{ once: true }}
+          className="bg-accent-wine/10 border-l-4 border-accent-wine p-6 rounded-r-xl text-left md:text-center max-w-2xl mx-auto hover:bg-accent-wine/20 transition-colors duration-300"
         >
-            <p className="font-dm-sans italic text-main-red/90 text-sm md:text-base leading-relaxed">
-                "Dan di antara ayat-ayat-Nya ialah Dia menciptakan untukmu istri-istri dari jenismu sendiri, supaya kamu merasa nyaman kepadanya, dan dijadikan-Nya di antaramu mawaddah dan rahmah. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berpikir."
-                <br/><span className="font-bold not-italic mt-2 block text-xs md:text-sm">(QS. Ar-Rum: 21)</span>
-            </p>
+          <p className="font-dm-sans italic text-main-red/90 text-sm md:text-base leading-relaxed">
+            "Dan di antara ayat-ayat-Nya ialah Dia menciptakan untukmu istri-istri dari jenismu sendiri, supaya kamu merasa nyaman kepadanya, dan dijadikan-Nya di antaramu mawaddah dan rahmah. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berpikir."
+            <br /><span className="font-bold not-italic mt-2 block text-xs md:text-sm">(QS. Ar-Rum: 21)</span>
+          </p>
         </motion.div>
       </div>
     </section>

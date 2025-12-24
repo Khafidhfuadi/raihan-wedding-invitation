@@ -6,6 +6,7 @@ import Countdown from './components/Countdown';
 import CoupleIntro from './components/CoupleIntro';
 import EventDetails from './components/EventDetails';
 import Etiquette from './components/Etiquette';
+import PrayerSection from './components/PrayerSection';
 import Wishes from './components/Wishes';
 import Closing from './components/Closing';
 import GuestManager from './pages/GuestManager';
@@ -136,6 +137,7 @@ const MainApp = () => {
         <EventDetails />
         <Countdown />
         <Etiquette />
+        <PrayerSection />
         <Wishes />
         <Closing />
 

@@ -133,7 +133,7 @@ const Wishes = () => {
             transition={{ duration: 0.6, type: "spring" }}
             className="font-pinyon text-5xl md:text-6xl mb-4 text-vanilla"
           >
-            Wishes
+            Ucapan
           </motion.h2>
           <motion.p
             initial={{ opacity: 0 }}
@@ -195,7 +195,7 @@ const Wishes = () => {
                     exit={{ opacity: 0, height: 0 }}
                     className="mb-4 text-green-200 text-sm bg-green-900/50 p-3 rounded-lg border border-green-500/30 overflow-hidden"
                   >
-                    Terima kasih! Ucapan Anda telah terkirim.
+                    Jazakumullahu khairon! Ucapan Antum telah terkirim.
                   </motion.div>
                 )}
               </AnimatePresence>

@@ -57,7 +57,7 @@ const Closing = () => {
                     transition={{ duration: 0.8 }}
                     className="font-pinyon text-4xl md:text-5xl mb-6 text-accent-wine"
                 >
-                    Terima Kasih
+                    جَزَاكُمُ اللهُ خَيْرًا
                 </motion.h2>
                 <motion.p
                     initial={{ opacity: 0 }}

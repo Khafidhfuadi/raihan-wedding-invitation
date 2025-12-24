@@ -40,64 +40,68 @@ const MainSection = () => {
       />
 
       {/* Main Content */}
-      <div className="z-20 text-center px-6 max-w-4xl flex flex-col items-center">
+      <div className="z-20 text-center px-6 max-w-4xl flex flex-col items-center gap-8 md:gap-12">
+
         <motion.div
-          style={{ scale: scaleVector }}
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="w-40 md:w-56 mb-8 relative"
+          className="text-center"
         >
-          <div className="absolute inset-0 bg-vanilla/20 blur-3xl rounded-full animate-pulse"></div>
-          <motion.img
-            animate={{ y: [0, -15, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            src={mainVector}
-            alt="Wedding Symbol"
-            className="w-full h-auto drop-shadow-2xl relative z-10"
-          />
-        </motion.div>
-
-        <motion.p
-          initial={{ y: 20, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          viewport={{ once: true }}
-          className="font-pinyon text-3xl md:text-4xl text-vanilla mb-2 drop-shadow-md"
-        >
-          The Wedding of
-        </motion.p>
-
-        <motion.h2
-          initial={{ y: 20, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          viewport={{ once: true }}
-          className="font-pinyon text-6xl md:text-8xl text-vanilla mb-10 drop-shadow-lg leading-tight"
-        >
-          Raihan <span className="text-4xl md:text-6xl">&</span> Fadhil
-        </motion.h2>
-
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.7, duration: 0.8 }}
-          whileHover={{ scale: 1.05 }}
-          viewport={{ once: true }}
-          className="bg-highlight-rose/40 backdrop-blur-sm px-10 py-4 rounded-full border border-vanilla/40 shadow-lg cursor-default"
-        >
-          <p className="font-dm-sans text-xl md:text-2xl font-bold text-vanilla tracking-[0.2em]">
-            10 JANUARI 2026
+          <p className="font-dm-sans text-xl md:text-2xl text-vanilla mb-4 font-medium">ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ</p>
+          <p className="font-dm-sans text-vanilla/90 text-sm md:text-base leading-relaxed max-w-lg mx-auto">
+            Dengan memohon rahmat dan ridho Allah.<br />
+            Kami bermaksud menyelenggarakan Walimatul Urs pernikahan putra - putri kami
           </p>
         </motion.div>
+
+        <div className="flex flex-col items-center">
+          <motion.div
+            style={{ scale: scaleVector }}
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="w-40 md:w-56 mb-6 relative"
+          >
+            <div className="absolute inset-0 bg-vanilla/20 blur-3xl rounded-full animate-pulse"></div>
+            <motion.img
+              animate={{ y: [0, -15, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              src={mainVector}
+              alt="Wedding Symbol"
+              className="w-full h-auto drop-shadow-2xl relative z-10"
+            />
+          </motion.div>
+
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            viewport={{ once: true }}
+            className="font-pinyon text-3xl md:text-4xl text-vanilla mb-2 drop-shadow-md"
+          >
+            The Wedding of
+          </motion.p>
+
+          <motion.h2
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            viewport={{ once: true }}
+            className="font-pinyon text-6xl md:text-8xl text-vanilla drop-shadow-lg leading-tight"
+          >
+            Raihan <span className="text-4xl md:text-6xl">&</span> Fadhil
+          </motion.h2>
+        </div>
 
         <motion.p
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: 1, duration: 1 }}
           viewport={{ once: true }}
-          className="font-dm-sans text-vanilla/90 mt-12 max-w-lg text-sm md:text-base leading-relaxed italic"
+          className="font-dm-sans text-vanilla/90 max-w-lg text-sm md:text-base leading-relaxed italic"
         >
           "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya."
           <br /><span className="font-bold not-italic mt-2 block">(QS. Ar-Rum: 21)</span>

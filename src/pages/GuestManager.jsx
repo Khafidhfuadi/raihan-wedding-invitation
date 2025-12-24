@@ -218,7 +218,7 @@ ${url}
 Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Sdr berkenan memberikan doa restu kepada keduanya.
 --------------------------------
 
-Terimakasih atas perhatiannya.
+Jazakumullah khairon.
 *_Wassalaamu'alaykum Wa Rahmatullaahi Wa Barakaatuh._*
 
 *🌷Mista Sucipto & Hodijah 🌷*
