@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import decorLeft from '../assets/decor-left.png';
-import decorRight from '../assets/decor-right.png';
+import decorLeft from '../assets/decor-left.webp';
+import decorRight from '../assets/decor-right.webp';
 
 const Opening = ({ onOpen }) => {
   const [guestName, setGuestName] = useState('Nama Tamu');

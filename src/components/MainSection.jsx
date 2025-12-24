@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import mainVector from '../assets/main-vector.png';
-import leftDecor from '../assets/decor-left.png';
-import rightDecor from '../assets/decor-right.png';
+import mainVector from '../assets/main-vector.webp';
+import leftDecor from '../assets/decor-left.webp';
+import rightDecor from '../assets/decor-right.webp';
 
 const MainSection = () => {
   const containerRef = useRef(null);

@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import manVector from '../assets/man-vector.png';
-import womanVector from '../assets/woman-vector.png';
-import sectionDivider from '../assets/divider-section.png';
+import manVector from '../assets/man-vector.webp';
+import womanVector from '../assets/woman-vector.webp';
+import sectionDivider from '../assets/divider-section.webp';
 
 const CoupleIntro = () => {
     return (

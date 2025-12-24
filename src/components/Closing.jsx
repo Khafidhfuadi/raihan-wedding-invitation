@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import closingVector from '../assets/closing-vector.png';
-import decorLeft from '../assets/decor-left.png';
-import decorRight from '../assets/decor-right.png';
+import closingVector from '../assets/closing-vector.webp';
+import decorLeft from '../assets/decor-left.webp';
+import decorRight from '../assets/decor-right.webp';
 
 const Closing = () => {
     return (
