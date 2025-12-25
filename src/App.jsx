@@ -33,6 +33,26 @@ const MainApp = () => {
   }, []);
 
   useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (isPlaying && audioRef.current) {
+          audioRef.current.pause();
+        }
+      } else {
+        if (isPlaying && audioRef.current) {
+          audioRef.current.play();
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isPlaying]);
+
+  useEffect(() => {
     // Lock scroll initially
     if (!isOpened) {
       document.body.style.overflow = 'hidden';
