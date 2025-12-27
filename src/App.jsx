@@ -9,15 +9,35 @@ import Etiquette from './components/Etiquette';
 import PrayerSection from './components/PrayerSection';
 import Wishes from './components/Wishes';
 import Closing from './components/Closing';
+import LoadingScreen from './components/LoadingScreen';
 import GuestManager from './pages/GuestManager';
 import backsound from './assets/audio/backsound.mp3';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MainApp = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [isOpened, setIsOpened] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const audioRef = useRef(null);
+
+  useEffect(() => {
+    // Handle initial loading
+    const handleLoad = () => {
+      // Minimum loading time to prevent flicker
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
+    };
+
+    // Check if already loaded
+    if (document.readyState === 'complete') {
+      handleLoad();
+    } else {
+      window.addEventListener('load', handleLoad);
+      return () => window.removeEventListener('load', handleLoad);
+    }
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -104,6 +124,7 @@ const MainApp = () => {
 
   return (
     <div className="w-full bg-main-red min-h-screen">
+      <LoadingScreen isLoading={isLoading} />
       <audio ref={audioRef} src={backsound} loop />
 
       <Opening onOpen={handleOpen} />

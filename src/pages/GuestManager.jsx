@@ -177,7 +177,7 @@ const GuestManager = () => {
 Assalamu'alaykum Warahmatullahi Wabarokatuh
 
 Kepada
-${name}
+*${name}*
 di Tempat
 
 Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i, untuk menghadiri acara pernikahan kami :
@@ -199,7 +199,7 @@ Hormat kami,
 Raihan & Fadhil`;
         } else {
             message = `Kepada Bapak/Ibu/Saudara/i
-${name}
+*${name}*
 Di Tempat
 ---------------------------
 *بِسْــــــــــــــــــمِ اللهِ الرَّحْمَنِ الرَّحِيْمِ*
