@@ -221,8 +221,8 @@ Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Sdr berke
 Jazakumullah khairon.
 *_Wassalaamu'alaykum Wa Rahmatullaahi Wa Barakaatuh._*
 
-*🌷Mista Sucipto & Hodijah 🌷*
-*🌷Aryadin & Titik Hartini🌷*`;
+*Kel. Bapak Mista Sucipto & Ibu Hodijah*
+*Kel. Bapak Aryadin & Ibu Titik Hartini*`;
         }
 
         navigator.clipboard.writeText(message).then(() => {
