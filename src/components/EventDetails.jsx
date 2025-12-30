@@ -130,16 +130,8 @@ const EventDetails = () => {
                         transition={{ duration: 0.3 }}
                         className="rounded-xl overflow-hidden shadow-2xl border-4 border-vanilla/20 mb-8 h-64 md:h-80"
                     >
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d680.8604736524015!2d106.93742059653353!3d-6.412897318336159!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2s!5e1!3m2!1sid!2sid!4v1766150828580!5m2!1sid!2sid"
-                            width="100%"
-                            height="100%"
-                            style={{ border: 0 }}
-                            allowFullScreen=""
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                            title="Wedding Location"
-                        ></iframe>
+
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d2982.1018601981027!2d106.93557260803836!3d-6.412941717413175!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2s!5e1!3m2!1sid!2sid!4v1767094673107!5m2!1sid!2sid" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
                     </motion.div>
 
                     <motion.a
