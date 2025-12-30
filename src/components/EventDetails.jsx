@@ -137,7 +137,7 @@ const EventDetails = () => {
                     <motion.a
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        href="https://maps.app.goo.gl/U9SE5ZazQHzZgawQ6"
+                        href="https://maps.app.goo.gl/wh8aP4oJ9YSjiVKKA"
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex items-center gap-2 px-6 py-3 bg-vanilla text-main-red font-bold rounded-full hover:bg-white transition-all shadow-lg text-sm md:text-base group"
@@ -149,7 +149,7 @@ const EventDetails = () => {
                         >
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>
                         </motion.svg>
-                        Buka di Google Maps App
+                        Buka di Google Maps
                     </motion.a>
                 </motion.div>
             </div>
