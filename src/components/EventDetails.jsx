@@ -131,25 +131,34 @@ const EventDetails = () => {
                         className="rounded-xl overflow-hidden shadow-2xl border-4 border-vanilla/20 mb-8 h-64 md:h-80"
                     >
 
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d2982.1018601981027!2d106.93557260803836!3d-6.412941717413175!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2s!5e1!3m2!1sid!2sid!4v1767094673107!5m2!1sid!2sid" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+                        <iframe
+                            src="https://maps.google.com/maps?q=-6.412944,106.937278&t=&z=17&ie=UTF8&iwloc=&output=embed"
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            allowFullScreen=""
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            title="Lokasi Pernikahan"
+                        ></iframe>
                     </motion.div>
 
                     <motion.a
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        href="https://maps.app.goo.gl/wh8aP4oJ9YSjiVKKA"
+                        href="https://www.google.com/maps/dir/?api=1&destination=-6.412944,106.937278"
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex items-center gap-2 px-6 py-3 bg-vanilla text-main-red font-bold rounded-full hover:bg-white transition-all shadow-lg text-sm md:text-base group"
                     >
                         <motion.svg
-                            animate={{ y: [0, -3, 0] }}
+                            animate={{ x: [0, 5, 0] }}
                             transition={{ duration: 1.5, repeat: Infinity }}
                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                         >
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>
+                            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
                         </motion.svg>
-                        Buka di Google Maps
+                        Petunjuk Arah
                     </motion.a>
                 </motion.div>
             </div>
