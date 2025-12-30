@@ -105,6 +105,31 @@ const Countdown = () => {
           <TimeItem value={timeLeft.minutes} label="Menit" />
           <TimeItem value={timeLeft.seconds} label="Detik" />
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+          viewport={{ once: true }}
+          className="mt-12"
+        >
+          <motion.a
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=The+Wedding+of+Raihan+%26+Fadhil&dates=20260110T010000Z/20260110T070000Z&details=Kami+menantikan+kehadiran+Anda+untuk+berbagi+kebahagiaan+bersama+kami.&location=Kp.+Jampang+RT.01+RW.03,+Ds.+Wanaherang,+Kec.+Gunung+Putri,+Kab.+Bogor"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-vanilla text-main-red font-bold rounded-full hover:bg-white transition-all shadow-lg text-sm md:text-base group"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Simpan ke Kalender
+          </motion.a>
+        </motion.div>
       </motion.div>
     </section>
   );
