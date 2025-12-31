@@ -12,8 +12,18 @@ const ReservationBook = () => {
 
     // Stats
     const totalGuests = guests.length;
-    const totalCheckedIn = guests.filter(g => g.attendance_status === 'hadir').length;
+    const checkedInGuests = guests.filter(g => g.attendance_status === 'hadir');
+    const totalCheckedIn = checkedInGuests.length;
     const totalPax = guests.reduce((sum, g) => sum + (g.pax || 0), 0);
+
+    const attendancePercentage = totalGuests > 0 ? ((totalCheckedIn / totalGuests) * 100).toFixed(1) : 0;
+
+    // Category Stats
+    const mempelaiTotal = guests.filter(g => g.category === 'mempelai').length;
+    const mempelaiCheckedIn = guests.filter(g => g.category === 'mempelai' && g.attendance_status === 'hadir').length;
+
+    const orangTuaTotal = guests.filter(g => g.category === 'orangtua').length;
+    const orangTuaCheckedIn = guests.filter(g => g.category === 'orangtua' && g.attendance_status === 'hadir').length;
 
     useEffect(() => {
         fetchGuests();
@@ -164,25 +174,72 @@ const ReservationBook = () => {
 
     return (
         <div className="min-h-screen bg-vanilla p-6 md:p-12 font-dm-sans text-main-red">
-            <div className="max-w-5xl mx-auto">
-                <header className="mb-8 text-center md:text-left flex flex-col md:flex-row justify-between items-end gap-4">
-                    <div>
-                        <h1 className="font-pinyon text-5xl mb-2 text-accent-wine">Buku Tamu</h1>
-                        <p className="text-main-red/60">Meja Penerima Tamu</p>
+            <div className="max-w-6xl mx-auto">
+                <header className="mb-10">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
+                        <div>
+                            <h1 className="font-pinyon text-5xl mb-2 text-accent-wine">Buku Tamu</h1>
+                            <p className="text-main-red/60 text-lg">Dashboard Resepsionis</p>
+                        </div>
                     </div>
 
-                    <div className="flex gap-4 text-sm font-bold bg-white/50 p-4 rounded-xl shadow-sm border border-main-red/10">
-                        <div className="text-center px-4 border-r border-main-red/10">
-                            <span className="block text-2xl text-accent-wine">{totalCheckedIn}</span>
-                            <span className="text-xs uppercase tracking-wider text-main-red/60">Hadir</span>
+                    {/* Analytics Cards */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        {/* Main Stats */}
+                        <div className="col-span-2 md:col-span-1 bg-white/60 p-5 rounded-2xl border border-main-red/10 shadow-sm relative overflow-hidden">
+                            <div className="absolute right-0 top-0 p-4 opacity-5">
+                                <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
+                            </div>
+                            <p className="text-xs uppercase tracking-widest text-main-red/60 mb-1">Total Tamu Hadir</p>
+                            <div className="flex items-baseline gap-2">
+                                <h3 className="text-4xl font-bold text-accent-wine">{totalCheckedIn}</h3>
+                                <span className="text-sm text-main-red/50">/ {totalGuests} Undangan</span>
+                            </div>
+                            <div className="mt-3 h-1.5 w-full bg-main-red/10 rounded-full overflow-hidden">
+                                <div className="h-full bg-accent-wine transition-all duration-1000" style={{ width: `${attendancePercentage}%` }}></div>
+                            </div>
+                            <p className="text-xs text-right mt-1 text-main-red/50">{attendancePercentage}% Kehadiran</p>
                         </div>
-                        <div className="text-center px-4 border-r border-main-red/10">
-                            <span className="block text-2xl text-accent-wine">{totalPax}</span>
-                            <span className="text-xs uppercase tracking-wider text-main-red/60">Total Pax</span>
+
+                        <div className="col-span-2 md:col-span-1 bg-white/60 p-5 rounded-2xl border border-main-red/10 shadow-sm relative overflow-hidden">
+                            <div className="absolute right-0 top-0 p-4 opacity-5">
+                                <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" /></svg>
+                            </div>
+                            <p className="text-xs uppercase tracking-widest text-main-red/60 mb-1">Total Pax (Jiwa)</p>
+                            <div className="flex items-baseline gap-2">
+                                <h3 className="text-4xl font-bold text-main-red">{totalPax}</h3>
+                                <span className="text-sm text-main-red/50">Orang</span>
+                            </div>
+                            <p className="text-xs mt-3 text-main-red/50">
+                                Rata-rata: {(totalCheckedIn > 0 ? (totalPax / totalCheckedIn).toFixed(1) : 0)} org / undangan
+                            </p>
                         </div>
-                        <div className="text-center px-4">
-                            <span className="block text-2xl text-accent-wine">{totalGuests}</span>
-                            <span className="text-xs uppercase tracking-wider text-main-red/60">Undangan</span>
+
+                        {/* Breakdown Stats */}
+                        <div className="col-span-1 bg-blue-50/50 p-4 rounded-2xl border border-blue-100 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div className="flex justify-between items-start mb-2">
+                                    <span className="text-[10px] uppercase font-bold text-blue-800 bg-blue-100 px-2 py-0.5 rounded-full">Mempelai</span>
+                                    <span className="text-xs font-bold text-blue-900/50">{mempelaiCheckedIn}/{mempelaiTotal}</span>
+                                </div>
+                                <h3 className="text-2xl font-bold text-blue-900">{mempelaiTotal > 0 ? Math.round((mempelaiCheckedIn / mempelaiTotal) * 100) : 0}%</h3>
+                            </div>
+                            <div className="h-1 w-full bg-blue-200 rounded-full overflow-hidden mt-2">
+                                <div className="h-full bg-blue-600 transition-all" style={{ width: `${mempelaiTotal > 0 ? (mempelaiCheckedIn / mempelaiTotal) * 100 : 0}%` }}></div>
+                            </div>
+                        </div>
+
+                        <div className="col-span-1 bg-orange-50/50 p-4 rounded-2xl border border-orange-100 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div className="flex justify-between items-start mb-2">
+                                    <span className="text-[10px] uppercase font-bold text-orange-800 bg-orange-100 px-2 py-0.5 rounded-full">Orang Tua</span>
+                                    <span className="text-xs font-bold text-orange-900/50">{orangTuaCheckedIn}/{orangTuaTotal}</span>
+                                </div>
+                                <h3 className="text-2xl font-bold text-orange-900">{orangTuaTotal > 0 ? Math.round((orangTuaCheckedIn / orangTuaTotal) * 100) : 0}%</h3>
+                            </div>
+                            <div className="h-1 w-full bg-orange-200 rounded-full overflow-hidden mt-2">
+                                <div className="h-full bg-orange-600 transition-all" style={{ width: `${orangTuaTotal > 0 ? (orangTuaCheckedIn / orangTuaTotal) * 100 : 0}%` }}></div>
+                            </div>
                         </div>
                     </div>
                 </header>
