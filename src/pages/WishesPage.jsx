@@ -80,13 +80,86 @@ const getRelativeTime = (dateString) => {
     return "Lebih dari setahun lalu";
 };
 
+// --- New Wish Popup Component ---
+const NewWishPopup = ({ wish, onComplete }) => {
+    useEffect(() => {
+        // Play notification sound if possible? (Optional, maybe later)
+
+        const timer = setTimeout(() => {
+            onComplete();
+        }, 6000); // Display for 6 seconds
+        return () => clearTimeout(timer);
+    }, [onComplete]);
+
+    return (
+        <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.5, opacity: 0, y: -500, transition: { duration: 0.8, ease: "backIn" } }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        >
+            <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+
+            <motion.div
+                className="relative bg-main-red border-2 border-vanilla/30 p-8 md:p-12 rounded-3xl shadow-2xl max-w-2xl w-full text-center overflow-hidden"
+                layoutId={`wish-${wish.id}`}
+            >
+                {/* Decorative Glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-accent-wine/40 blur-[80px] -z-10 animate-pulse"></div>
+
+                <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                >
+                    <div className="inline-block px-4 py-1 rounded-full bg-vanilla/10 text-vanilla border border-vanilla/20 text-sm font-dm-sans mb-6">
+                        ✨ Ucapan Baru Masuk ✨
+                    </div>
+                </motion.div>
+
+                <motion.h3
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.3, type: "spring" }}
+                    className="font-pinyon text-5xl md:text-6xl text-vanilla mb-6 leading-tight"
+                >
+                    {wish.name}
+                </motion.h3>
+
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                    className="relative"
+                >
+                    <svg className="absolute -top-4 -left-2 text-vanilla/10 w-12 h-12" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11C14.017 11.5523 13.5693 12 13.017 12H12.017V5H22.017V15C22.017 18.3137 19.3307 21 16.017 21H14.017ZM5.0166 21L5.0166 18C5.0166 16.8954 5.91203 16 7.0166 16H10.0166C10.5689 16 11.0166 15.5523 11.0166 15V9C11.0166 8.44772 10.0166 8 8.0166 8H6.0166C5.46432 8 5.0166 8.44772 5.0166 9V11C5.0166 11.5523 4.56889 12 4.0166 12H3.0166V5H13.0166V15C13.0166 18.3137 10.3303 21 7.0166 21H5.0166Z" /></svg>
+                    <p className="font-dm-sans text-xl md:text-2xl text-vanilla/90 italic leading-relaxed px-8">
+                        "{wish.message}"
+                    </p>
+                </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.7 }}
+                    className="mt-8 text-sm text-vanilla/50 font-dm-sans"
+                >
+                    Baru saja
+                </motion.div>
+            </motion.div>
+        </motion.div>
+    );
+};
+
 // --- Vertical Marquee Component ---
 const VerticalMarqueeColumn = ({ items, speed = 50, className = "" }) => {
     const [contentHeight, setContentHeight] = useState(0);
     const containerRef = useRef(null);
 
     // If very few items, duplicate more to ensure smooth scroll
-    // We need enough items to cover at least 2x view height ideally
     const MIN_ITEMS = 6;
     const repeatCount = items.length < MIN_ITEMS ? Math.ceil(MIN_ITEMS / Math.max(1, items.length)) * 2 : 2;
     const duplicatedItems = Array(repeatCount).fill(items).flat();
@@ -137,7 +210,6 @@ const VerticalMarqueeColumn = ({ items, speed = 50, className = "" }) => {
                             </p>
 
                             <div className="mt-3 pt-3 border-t border-vanilla/10 flex items-center justify-between text-xs text-vanilla/50 font-dm-sans">
-                                {/* Simple time display */}
                                 <span>{getRelativeTime(wish.created_at)}</span>
                             </div>
                         </div>
@@ -152,6 +224,8 @@ const VerticalMarqueeColumn = ({ items, speed = 50, className = "" }) => {
 const WishesPage = () => {
     const [wishes, setWishes] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [popupQueue, setPopupQueue] = useState([]);
+    const [currentPopup, setCurrentPopup] = useState(null);
 
     useEffect(() => {
         fetchWishes();
@@ -159,14 +233,36 @@ const WishesPage = () => {
         const channel = supabase
             .channel('wishes_page_channel')
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'wishes' }, (payload) => {
-                setWishes((prev) => [payload.new, ...prev]);
+                console.log('Realtime event received:', payload);
+                const newWish = payload.new;
+
+                // Add to main list - Append for stability with ascending sort
+                setWishes((prev) => [...prev, newWish]);
+
+                // Add to popup queue to show notification
+                setPopupQueue((prev) => [...prev, newWish]);
             })
-            .subscribe();
+            .subscribe((status) => {
+                console.log('Supabase subscription status:', status);
+            });
 
         return () => {
             supabase.removeChannel(channel);
         };
     }, []);
+
+    // Queue Processor
+    useEffect(() => {
+        if (!currentPopup && popupQueue.length > 0) {
+            const nextWish = popupQueue[0];
+            setCurrentPopup(nextWish);
+            setPopupQueue((prev) => prev.slice(1));
+        }
+    }, [currentPopup, popupQueue]);
+
+    const handlePopupComplete = () => {
+        setCurrentPopup(null);
+    };
 
     const fetchWishes = async () => {
         try {
@@ -174,7 +270,7 @@ const WishesPage = () => {
             const { data, error } = await supabase
                 .from('wishes')
                 .select('*')
-                .order('created_at', { ascending: false });
+                .order('created_at', { ascending: true }); // Change to ascending for stable append
 
             if (error) throw error;
             if (data) setWishes(data);
@@ -198,6 +294,17 @@ const WishesPage = () => {
 
     return (
         <div className="h-screen w-screen bg-main-red text-vanilla selection:bg-accent-wine selection:text-vanilla overflow-hidden relative flex flex-col">
+
+            {/* Realtime Popup */}
+            <AnimatePresence>
+                {currentPopup && (
+                    <NewWishPopup
+                        key={currentPopup.id}
+                        wish={currentPopup}
+                        onComplete={handlePopupComplete}
+                    />
+                )}
+            </AnimatePresence>
 
             <ParticleBackground />
 
