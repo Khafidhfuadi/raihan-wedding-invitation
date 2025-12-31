@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+import decorLeft from '../assets/decor-left.webp';
+import decorRight from '../assets/decor-right.webp';
 
 // --- Particle Components ---
 const Particle = ({ delay }) => {
@@ -87,7 +89,7 @@ const NewWishPopup = ({ wish, onComplete }) => {
 
         const timer = setTimeout(() => {
             onComplete();
-        }, 6000); // Display for 6 seconds
+        }, 8000); // Display for 8 seconds
         return () => clearTimeout(timer);
     }, [onComplete]);
 
@@ -104,9 +106,15 @@ const NewWishPopup = ({ wish, onComplete }) => {
             />
 
             <motion.div
-                className="relative bg-main-red border-2 border-vanilla/30 p-8 md:p-12 rounded-3xl shadow-2xl max-w-2xl w-full text-center overflow-hidden"
+                className="relative bg-main-red border border-vanilla/30 p-12 md:p-16 rounded-3xl shadow-2xl max-w-3xl w-full text-center overflow-hidden"
                 layoutId={`wish-${wish.id}`}
             >
+
+                <motion.img
+                    initial={{ opacity: 0, x: 20 }} animate={{ opacity: 0.8, x: 0 }} transition={{ delay: 0.2, duration: 0.8 }}
+                    src={decorRight} className="absolute bottom-0 right-0 w-40 md:w-56 pointer-events-none translate-x-10 translate-y-10 opacity-50 mix-blend-screen" alt=""
+                />
+
                 {/* Decorative Glow */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-accent-wine/40 blur-[80px] -z-10 animate-pulse"></div>
 
@@ -116,7 +124,7 @@ const NewWishPopup = ({ wish, onComplete }) => {
                     transition={{ delay: 0.2 }}
                 >
                     <div className="inline-block px-4 py-1 rounded-full bg-vanilla/10 text-vanilla border border-vanilla/20 text-sm font-dm-sans mb-6">
-                        ✨ Ucapan Baru Masuk ✨
+                        ✨ جَزَاكُمُ ٱللّٰهُ خَيْرًا ✨
                     </div>
                 </motion.div>
 
@@ -149,13 +157,22 @@ const NewWishPopup = ({ wish, onComplete }) => {
                 >
                     Baru saja
                 </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.9 }}
+                    className="mt-4 text-2xl font-pinyon text-vanilla/30"
+                >
+                    #RaihanFadhilWedding
+                </motion.div>
             </motion.div>
         </motion.div>
     );
 };
 
-// --- Vertical Marquee Component ---
-const VerticalMarqueeColumn = ({ items, speed = 50, className = "" }) => {
+// --- vertical Marquee Component ---
+const VerticalMarqueeColumn = ({ items, speed = 50, className = "", highlightedIds = new Set() }) => {
     const [contentHeight, setContentHeight] = useState(0);
     const containerRef = useRef(null);
 
@@ -190,31 +207,42 @@ const VerticalMarqueeColumn = ({ items, speed = 50, className = "" }) => {
                     }
                 }}
             >
-                {duplicatedItems.map((wish, idx) => (
-                    <div
-                        key={`${wish.id}-${idx}`}
-                        className="w-full"
-                    >
-                        <div className="group relative bg-accent-wine/30 backdrop-blur-md p-6 rounded-2xl border border-vanilla/20 shadow-lg hover:shadow-xl hover:bg-accent-wine/40 transition-all duration-300 transform">
-                            {/* Quote Icon Decoration */}
-                            <div className="absolute top-4 right-6 text-vanilla/10 group-hover:text-vanilla/20 transition-colors pointer-events-none">
-                                <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11C14.017 11.5523 13.5693 12 13.017 12H12.017V5H22.017V15C22.017 18.3137 19.3307 21 16.017 21H14.017ZM5.0166 21L5.0166 18C5.0166 16.8954 5.91203 16 7.0166 16H10.0166C10.5689 16 11.0166 15.5523 11.0166 15V9C11.0166 8.44772 10.0166 8 8.0166 8H6.0166C5.46432 8 5.0166 8.44772 5.0166 9V11C5.0166 11.5523 4.56889 12 4.0166 12H3.0166V5H13.0166V15C13.0166 18.3137 10.3303 21 7.0166 21H5.0166Z" /></svg>
-                            </div>
+                {duplicatedItems.map((wish, idx) => {
+                    const isHighlighted = highlightedIds.has(wish.id);
+                    return (
+                        <div
+                            key={`${wish.id}-${idx}`}
+                            className="w-full"
+                        >
+                            <div className={`
+                                group relative backdrop-blur-md p-6 rounded-2xl border transition-all duration-500
+                                ${isHighlighted
+                                    ? 'bg-accent-wine/80 border-amber-200/50 shadow-[0_0_20px_rgba(251,191,36,0.15)]'
+                                    : 'bg-accent-wine/30 border-vanilla/20 shadow-lg hover:shadow-xl hover:bg-accent-wine/40'
+                                }
+                            `}>
+                                {/* Quote Icon Decoration */}
+                                <div className={`absolute top-4 right-6 transition-colors pointer-events-none ${isHighlighted ? 'text-amber-200/20' : 'text-vanilla/10 group-hover:text-vanilla/20'}`}>
+                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11C14.017 11.5523 13.5693 12 13.017 12H12.017V5H22.017V15C22.017 18.3137 19.3307 21 16.017 21H14.017ZM5.0166 21L5.0166 18C5.0166 16.8954 5.91203 16 7.0166 16H10.0166C10.5689 16 11.0166 15.5523 11.0166 15V9C11.0166 8.44772 10.0166 8 8.0166 8H6.0166C5.46432 8 5.0166 8.44772 5.0166 9V11C5.0166 11.5523 4.56889 12 4.0166 12H3.0166V5H13.0166V15C13.0166 18.3137 10.3303 21 7.0166 21H5.0166Z" /></svg>
+                                </div>
 
-                            <div className="mb-3">
-                                <h3 className="font-dm-sans font-bold text-lg text-vanilla mb-1 truncate">{wish.name}</h3>
-                            </div>
+                                <div className="mb-3 flex items-start justify-between gap-2">
+                                    <h3 className={`font-dm-sans font-bold text-lg mb-1 truncate flex-1 ${isHighlighted ? 'text-amber-100' : 'text-vanilla'}`}>
+                                        {wish.name}
+                                    </h3>
+                                </div>
 
-                            <p className="font-dm-sans text-vanilla/90 leading-relaxed text-sm whitespace-pre-line relative z-10 line-clamp-6">
-                                {wish.message}
-                            </p>
+                                <p className={`font-dm-sans leading-relaxed text-sm whitespace-pre-line relative z-10 line-clamp-6 ${isHighlighted ? 'text-white' : 'text-vanilla/90'}`}>
+                                    {wish.message}
+                                </p>
 
-                            <div className="mt-3 pt-3 border-t border-vanilla/10 flex items-center justify-between text-xs text-vanilla/50 font-dm-sans">
-                                <span>{getRelativeTime(wish.created_at)}</span>
+                                <div className={`mt-3 pt-3 border-t flex items-center justify-between text-xs font-dm-sans ${isHighlighted ? 'border-amber-200/20 text-amber-200/60' : 'border-vanilla/10 text-vanilla/50'}`}>
+                                    <span>{getRelativeTime(wish.created_at)}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </motion.div>
         </div>
     );
@@ -226,6 +254,7 @@ const WishesPage = () => {
     const [loading, setLoading] = useState(true);
     const [popupQueue, setPopupQueue] = useState([]);
     const [currentPopup, setCurrentPopup] = useState(null);
+    const [highlightedIds, setHighlightedIds] = useState(new Set());
 
     useEffect(() => {
         fetchWishes();
@@ -241,6 +270,18 @@ const WishesPage = () => {
 
                 // Add to popup queue to show notification
                 setPopupQueue((prev) => [...prev, newWish]);
+
+                // Add to highlighted set
+                setHighlightedIds(prev => new Set(prev).add(newWish.id));
+
+                // Remove highlight after duration (approx 2 loops: ~3 minutes to be safe/generous)
+                setTimeout(() => {
+                    setHighlightedIds(prev => {
+                        const next = new Set(prev);
+                        next.delete(newWish.id);
+                        return next;
+                    });
+                }, 180000); // 3 minutes highlight duration
             })
             .subscribe((status) => {
                 console.log('Supabase subscription status:', status);
@@ -345,9 +386,9 @@ const WishesPage = () => {
                     wishes.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-full">
                             {/* Render Columns with different speeds for Parallax effect */}
-                            <VerticalMarqueeColumn items={columns[0]} speed={100} className="" />
-                            <VerticalMarqueeColumn items={columns[1]} speed={80} className="hidden md:block pt-12" /> {/* Staggered start visually */}
-                            <VerticalMarqueeColumn items={columns[2]} speed={110} className="hidden lg:block pt-24" />
+                            <VerticalMarqueeColumn items={columns[0]} speed={100} className="" highlightedIds={highlightedIds} />
+                            <VerticalMarqueeColumn items={columns[1]} speed={80} className="hidden md:block pt-12" highlightedIds={highlightedIds} /> {/* Staggered start visually */}
+                            <VerticalMarqueeColumn items={columns[2]} speed={110} className="hidden lg:block pt-24" highlightedIds={highlightedIds} />
                         </div>
                     ) : (
                         <div className="flex flex-col justify-center items-center h-full opacity-60">
