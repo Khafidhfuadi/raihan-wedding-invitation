@@ -425,7 +425,7 @@ const WishesPage = () => {
                             Kumpulan doa dan harapan untuk Raihan & Fadhil
                         </p>
                         <div className="text-4xl font-pinyon text-vanilla/40 mt-1">#RaihanFadhilWedding</div>
-                        <div className="font-dm-sans text-xs text-vanilla/30 tracking-[0.2em] mt-2 uppercase">10 Januari 2025</div>
+                        <div className="font-dm-sans text-xs text-vanilla/30 tracking-[0.2em] mt-2 uppercase">10 Januari 2026</div>
                     </div>
                 </header>
             </div>
@@ -456,73 +456,112 @@ const WishesPage = () => {
             <footer className="fixed bottom-0 left-0 right-0 z-50 bg-main-red/90 backdrop-blur-md border-t border-vanilla/10 py-3 px-6 shadow-2xl">
                 <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-vanilla/80 font-dm-sans text-sm">
                     {/* Prayer Times */}
-                    <div className="flex items-center gap-4 text-xs md:text-sm overflow-x-auto max-w-full no-scrollbar whitespace-nowrap">
-                        <span className="opacity-50 uppercase tracking-widest text-[10px]">Menuju Waktu Sholat</span>
-                        {prayerTimes ? (
-                            (() => {
-                                const prayers = [
-                                    { name: 'Subuh', time: prayerTimes.Fajr },
-                                    { name: 'Dzuhur', time: prayerTimes.Dhuhr },
-                                    { name: 'Ashar', time: prayerTimes.Asr },
-                                    { name: 'Maghrib', time: prayerTimes.Maghrib },
-                                    { name: 'Isya', time: prayerTimes.Isha },
-                                ];
+                    <div className="flex items-center gap-4 text-xs md:text-sm overflow-x-auto max-w-full no-scrollbar whitespace-nowrap min-w-0">
+                        <AnimatePresence mode="wait">
+                            {prayerTimes ? (
+                                (() => {
+                                    const prayers = [
+                                        { name: 'SUBUH', time: prayerTimes.Fajr },
+                                        { name: 'DZUHUR', time: prayerTimes.Dhuhr },
+                                        { name: 'ASHAR', time: prayerTimes.Asr },
+                                        { name: 'MAGHRIB', time: prayerTimes.Maghrib },
+                                        { name: 'ISYA', time: prayerTimes.Isha },
+                                    ];
 
-                                const now = new Date();
-                                const currentHours = now.getHours();
-                                const currentMinutes = now.getMinutes();
-                                const currentSeconds = now.getSeconds();
+                                    // Use currentTime state to ensure sync with re-renders, assuming it's available in scope
+                                    // Fallback to new Date() if needed, but consistency is better.
+                                    // The parent component has `currentTime` state.
+                                    const now = currentTime || new Date();
+                                    const currentTimestamp = now.getTime();
 
-                                let nextPrayer = null;
-                                let timeDiff = Infinity;
+                                    let activePrayer = null;
+                                    let nextPrayer = null;
+                                    let timeDiff = Infinity;
 
-                                for (const prayer of prayers) {
-                                    const [pHours, pMinutes] = prayer.time.split(':').map(Number);
-                                    const prayerDate = new Date();
-                                    prayerDate.setHours(pHours, pMinutes, 0, 0);
+                                    for (const prayer of prayers) {
+                                        const [pHours, pMinutes] = prayer.time.split(':').map(Number);
+                                        const prayerDate = new Date();
+                                        prayerDate.setHours(pHours, pMinutes, 0, 0);
 
-                                    let diff = prayerDate - now;
-                                    if (diff < 0) {
-                                        // If prayer passed today, consider it for tomorrow (simplied logic here, mostly we just look forward)
-                                        // But for proper "next", if all passed, the first one tomorrow is next.
-                                        // Let's keep it simple: find first one > 0. If none, it's Subuh tomorrow.
-                                        continue;
+                                        const diff = prayerDate.getTime() - currentTimestamp;
+
+                                        // Check if currently within 10 minutes after prayer time (active prayer)
+                                        const tenMinutesInMs = 10 * 60 * 1000;
+
+                                        if (diff <= 0 && diff >= -tenMinutesInMs) {
+                                            activePrayer = prayer;
+                                            break;
+                                        }
+
+                                        if (diff > 0 && diff < timeDiff) {
+                                            timeDiff = diff;
+                                            nextPrayer = prayer;
+                                        }
                                     }
 
-                                    if (diff < timeDiff) {
-                                        timeDiff = diff;
-                                        nextPrayer = prayer;
+                                    // 1. ACTIVE PRAYER STATE
+                                    if (activePrayer) {
+                                        return (
+                                            <motion.div
+                                                key="active-prayer-msg"
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -20 }}
+                                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                                className="flex items-center gap-3 text-amber-200 font-bold tracking-wide"
+                                            >
+                                                <span className="text-xl animate-pulse">🕌</span>
+                                                <span>SAATNYA WAKTU {activePrayer.name} UNTUK WILAYAH JAKARTA DAN SEKITARNYA</span>
+                                            </motion.div>
+                                        );
                                     }
-                                }
 
-                                // If no prayer found later today, next is Subuh tomorrow
-                                if (!nextPrayer) {
-                                    nextPrayer = prayers[0];
-                                    const [pHours, pMinutes] = nextPrayer.time.split(':').map(Number);
-                                    const tomorrow = new Date();
-                                    tomorrow.setDate(tomorrow.getDate() + 1);
-                                    tomorrow.setHours(pHours, pMinutes, 0, 0);
-                                    timeDiff = tomorrow - now;
-                                }
+                                    // 2. COUNTDOWN STATE
+                                    if (!nextPrayer) {
+                                        nextPrayer = prayers[0];
+                                        const [pHours, pMinutes] = nextPrayer.time.split(':').map(Number);
+                                        const tomorrow = new Date();
+                                        tomorrow.setDate(tomorrow.getDate() + 1);
+                                        tomorrow.setHours(pHours, pMinutes, 0, 0);
+                                        timeDiff = tomorrow - now;
+                                    }
 
-                                // Format Countdown
-                                const totalSeconds = Math.floor(timeDiff / 1000);
-                                const h = Math.floor(totalSeconds / 3600);
-                                const m = Math.floor((totalSeconds % 3600) / 60);
-                                const s = totalSeconds % 60;
-                                const countdown = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                                    const totalSeconds = Math.floor(timeDiff / 1000);
+                                    const h = Math.floor(totalSeconds / 3600);
+                                    const m = Math.floor((totalSeconds % 3600) / 60);
+                                    const s = totalSeconds % 60;
+                                    const countdown = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 
-                                return (
-                                    <div className="flex gap-2 font-medium items-center">
-                                        <span className="text-amber-200 font-bold">{nextPrayer.name}</span>
-                                        <span className="font-mono bg-vanilla/10 px-2 py-0.5 rounded text-xs">{countdown}</span>
-                                        <span className="text-xs opacity-50">({nextPrayer.time})</span>
-                                    </div>
-                                );
-                            })()
-                        ) : (
-                            <span className="animate-pulse">Memuat...</span>
-                        )}
+                                    return (
+                                        <motion.div
+                                            key="countdown-msg"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                            transition={{ duration: 0.5, ease: "easeOut" }}
+                                            className="flex items-center gap-4"
+                                        >
+                                            <span className="opacity-50 uppercase tracking-widest text-[10px]">Menuju Waktu Sholat</span>
+                                            <div className="flex gap-2 font-medium items-center">
+                                                <span className="text-amber-200 font-bold capitalize">{nextPrayer.name.toLowerCase()}</span>
+                                                <span className="font-mono bg-vanilla/10 px-2 py-0.5 rounded text-xs">{countdown}</span>
+                                                <span className="text-xs opacity-50">({nextPrayer.time})</span>
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })()
+                            ) : (
+                                <motion.span
+                                    key="loading"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="animate-pulse"
+                                >
+                                    Memuat...
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
                     </div>
 
                     {/* Adab Walimah (Center) */}

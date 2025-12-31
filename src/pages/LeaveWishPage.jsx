@@ -63,7 +63,7 @@ const LeaveWishPage = () => {
                     </p>
                     <div className="mt-6 border-t border-vanilla/10 pt-4">
                         <p className="font-pinyon text-2xl text-vanilla/60">The Wedding of Raihan & Fadhil</p>
-                        <p className="font-dm-sans text-xs text-vanilla/40 tracking-widest mt-1">10 • 01 • 2025</p>
+                        <p className="font-dm-sans text-xs text-vanilla/40 tracking-widest mt-1">10 • 01 • 2026</p>
                     </div>
                 </div>
 
