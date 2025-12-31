@@ -242,9 +242,7 @@ const VerticalMarqueeColumn = React.memo(({ items, speed = 50, className = "", h
                                     {wish.message}
                                 </p>
 
-                                <div className={`mt-3 pt-3 border-t flex items-center justify-between text-xs font-dm-sans ${isHighlighted ? 'border-amber-200/20 text-amber-200/60' : 'border-vanilla/10 text-vanilla/50'}`}>
-                                    <span>{getRelativeTime(wish.created_at)}</span>
-                                </div>
+
                             </div>
                         </div>
                     );
