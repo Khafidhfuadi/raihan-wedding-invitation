@@ -262,6 +262,14 @@ const WishesPage = () => {
     const [currentPopup, setCurrentPopup] = useState(null);
     const [highlightedIds, setHighlightedIds] = useState(new Set());
 
+    // Spotlight State
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+    const handleMouseMove = (e) => {
+        const { clientX, clientY } = e;
+        setMousePosition({ x: clientX, y: clientY });
+    };
+
     // Footer States
     const [currentTime, setCurrentTime] = useState(new Date());
     const [prayerTimes, setPrayerTimes] = useState(null);
@@ -387,7 +395,17 @@ const WishesPage = () => {
     }, [wishes]);
 
     return (
-        <div className="h-screen w-screen bg-main-red text-vanilla selection:bg-accent-wine selection:text-vanilla overflow-hidden relative flex flex-col">
+        <div
+            onMouseMove={handleMouseMove}
+            className="h-screen w-screen bg-main-red text-vanilla selection:bg-accent-wine selection:text-vanilla overflow-hidden relative flex flex-col"
+        >
+            {/* Spotlight Overlay */}
+            <div
+                className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
+                style={{
+                    background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,0.06), transparent 40%)`
+                }}
+            />
 
             {/* Realtime Popup */}
             <AnimatePresence>
@@ -414,19 +432,29 @@ const WishesPage = () => {
                 />
             </div>
 
-            <div className="container mx-auto px-4 py-6 relative z-10 flex-none z-20">
-                {/* Compact Header */}
-                <header className="flex justify-between items-end border-b border-vanilla/10 pb-4 mb-4">
-                    <h1 className="font-pinyon text-5xl md:text-6xl text-vanilla drop-shadow-sm leading-none">
-                        Wall of Wishes
+            <div className="container mx-auto px-4 py-8 relative z-20 flex-none">
+                {/* Centered Header */}
+                <header className="flex flex-col items-center justify-center text-center pb-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-2"
+                    >
+                        <div className="inline-block px-4 py-1.5 rounded-full bg-black/20 border border-vanilla/10 backdrop-blur-sm text-xs font-dm-sans tracking-widest uppercase text-vanilla/60 mb-3">
+                            The Wedding of
+                        </div>
+                    </motion.div>
+
+                    <h1 className="font-pinyon text-6xl md:text-7xl text-vanilla drop-shadow-sm leading-none mb-2">
+                        Raihan & Fadhil
                     </h1>
-                    <div className="text-right hidden md:block">
-                        <p className="font-dm-sans text-vanilla/80 text-sm max-w-md ml-auto">
-                            Kumpulan doa dan harapan untuk Raihan & Fadhil
-                        </p>
-                        <div className="text-4xl font-pinyon text-vanilla/40 mt-1">#RaihanFadhilWedding</div>
-                        <div className="font-dm-sans text-xs text-vanilla/30 tracking-[0.2em] mt-2 uppercase">10 Januari 2026</div>
-                    </div>
+
+                    <p className="font-dm-sans text-vanilla/80 text-sm md:text-base max-w-lg leading-relaxed">
+                        Ucapan doa dan harapan tulus dari para tamu yang berbahagia
+                    </p>
+                    <div className="font-dm-sans text-xs text-vanilla/30 tracking-[0.2em] mt-3 uppercase">10 Januari 2026</div>
+
+
                 </header>
             </div>
 
@@ -452,142 +480,177 @@ const WishesPage = () => {
                     )
                 )}
             </div>
-            {/* Sticky Footer */}
-            <footer className="fixed bottom-0 left-0 right-0 z-50 bg-main-red/90 backdrop-blur-md border-t border-vanilla/10 py-3 px-6 shadow-2xl">
-                <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-vanilla/80 font-dm-sans text-sm">
-                    {/* Prayer Times */}
-                    <div className="flex items-center gap-4 text-xs md:text-sm overflow-x-auto max-w-full no-scrollbar whitespace-nowrap min-w-0">
-                        <AnimatePresence mode="wait">
-                            {prayerTimes ? (
-                                (() => {
-                                    const prayers = [
-                                        { name: 'SUBUH', time: prayerTimes.Fajr },
-                                        { name: 'DZUHUR', time: prayerTimes.Dhuhr },
-                                        { name: 'ASHAR', time: prayerTimes.Asr },
-                                        { name: 'MAGHRIB', time: prayerTimes.Maghrib },
-                                        { name: 'ISYA', time: prayerTimes.Isha },
-                                    ];
+            {/* Floating Footer */}
+            {/* Floating Footer */}
+            <AnimatePresence mode="wait">
+                {!currentPopup && (
+                    <motion.footer
+                        initial={{ y: 100, opacity: 0, width: "60px" }}
+                        animate={{
+                            y: 0,
+                            opacity: 1,
+                            width: "95%",
+                            transition: {
+                                y: { duration: 0.5, ease: "backOut" },
+                                width: { delay: 0.4, duration: 0.6, ease: [0.25, 0.1, 0.25, 1.0] }, // Cubic bezier for silky smooth expansion
+                                opacity: { duration: 0.4 }
+                            }
+                        }}
+                        exit={{
+                            y: 100,
+                            opacity: 0,
+                            width: "60px",
+                            transition: {
+                                width: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1.0] }, // Matches entrance smoothness
+                                y: { delay: 0.5, duration: 0.5, ease: "backIn" }, // Starts dropping just before shrink ends
+                                opacity: { delay: 0.6, duration: 0.3 }
+                            }
+                        }}
+                        className="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-5xl bg-black/40 backdrop-blur-xl border border-vanilla/10 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-vanilla/20 rounded-full"
+                        style={{ height: "auto", minHeight: "60px" }}
+                    >
+                        {/* Content Container */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1, transition: { delay: 0.7, duration: 0.4 } }} // Wait for expansion
+                            exit={{ opacity: 0, transition: { duration: 0.2 } }} // Fade out quickly
+                            className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-vanilla/80 font-dm-sans text-sm py-3 px-4 md:px-6 w-full h-full whitespace-nowrap"
+                        >
+                            {/* Prayer Times */}
+                            <div className="flex items-center gap-4 text-xs md:text-sm overflow-x-auto max-w-full no-scrollbar whitespace-nowrap min-w-0">
+                                <AnimatePresence mode="wait">
+                                    {prayerTimes ? (
+                                        (() => {
+                                            const prayers = [
+                                                { name: 'SUBUH', time: prayerTimes.Fajr },
+                                                { name: 'DZUHUR', time: prayerTimes.Dhuhr },
+                                                { name: 'ASHAR', time: prayerTimes.Asr },
+                                                { name: 'MAGHRIB', time: prayerTimes.Maghrib },
+                                                { name: 'ISYA', time: prayerTimes.Isha },
+                                            ];
 
-                                    // Use currentTime state to ensure sync with re-renders, assuming it's available in scope
-                                    // Fallback to new Date() if needed, but consistency is better.
-                                    // The parent component has `currentTime` state.
-                                    const now = currentTime || new Date();
-                                    const currentTimestamp = now.getTime();
+                                            // Use currentTime state to ensure sync with re-renders, assuming it's available in scope
+                                            // Fallback to new Date() if needed, but consistency is better.
+                                            // The parent component has `currentTime` state.
+                                            const now = currentTime || new Date();
+                                            const currentTimestamp = now.getTime();
 
-                                    let activePrayer = null;
-                                    let nextPrayer = null;
-                                    let timeDiff = Infinity;
+                                            let activePrayer = null;
+                                            let nextPrayer = null;
+                                            let timeDiff = Infinity;
 
-                                    for (const prayer of prayers) {
-                                        const [pHours, pMinutes] = prayer.time.split(':').map(Number);
-                                        const prayerDate = new Date();
-                                        prayerDate.setHours(pHours, pMinutes, 0, 0);
+                                            for (const prayer of prayers) {
+                                                const [pHours, pMinutes] = prayer.time.split(':').map(Number);
+                                                const prayerDate = new Date();
+                                                prayerDate.setHours(pHours, pMinutes, 0, 0);
 
-                                        const diff = prayerDate.getTime() - currentTimestamp;
+                                                const diff = prayerDate.getTime() - currentTimestamp;
 
-                                        // Check if currently within 10 minutes after prayer time (active prayer)
-                                        const tenMinutesInMs = 10 * 60 * 1000;
+                                                // Check if currently within 10 minutes after prayer time (active prayer)
+                                                const tenMinutesInMs = 10 * 60 * 1000;
 
-                                        if (diff <= 0 && diff >= -tenMinutesInMs) {
-                                            activePrayer = prayer;
-                                            break;
-                                        }
+                                                if (diff <= 0 && diff >= -tenMinutesInMs) {
+                                                    activePrayer = prayer;
+                                                    break;
+                                                }
 
-                                        if (diff > 0 && diff < timeDiff) {
-                                            timeDiff = diff;
-                                            nextPrayer = prayer;
-                                        }
-                                    }
+                                                if (diff > 0 && diff < timeDiff) {
+                                                    timeDiff = diff;
+                                                    nextPrayer = prayer;
+                                                }
+                                            }
 
-                                    // 1. ACTIVE PRAYER STATE
-                                    if (activePrayer) {
-                                        return (
-                                            <motion.div
-                                                key="active-prayer-msg"
-                                                initial={{ opacity: 0, y: 20 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -20 }}
-                                                transition={{ duration: 0.5, ease: "easeOut" }}
-                                                className="flex items-center gap-3 text-amber-200 font-bold tracking-wide"
-                                            >
-                                                <span className="text-xl animate-pulse">🕌</span>
-                                                <span>SAATNYA WAKTU {activePrayer.name} UNTUK WILAYAH JAKARTA DAN SEKITARNYA</span>
-                                            </motion.div>
-                                        );
-                                    }
+                                            // 1. ACTIVE PRAYER STATE
+                                            if (activePrayer) {
+                                                return (
+                                                    <motion.div
+                                                        key="active-prayer-msg"
+                                                        initial={{ opacity: 0, y: 20 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        exit={{ opacity: 0, y: -20 }}
+                                                        transition={{ duration: 0.5, ease: "easeOut" }}
+                                                        className="flex items-center gap-3 text-amber-200 font-bold tracking-wide"
+                                                    >
+                                                        <span className="text-xl animate-pulse">🕌</span>
+                                                        <span>SAATNYA WAKTU {activePrayer.name} UNTUK WILAYAH JAKARTA DAN SEKITARNYA</span>
+                                                    </motion.div>
+                                                );
+                                            }
 
-                                    // 2. COUNTDOWN STATE
-                                    if (!nextPrayer) {
-                                        nextPrayer = prayers[0];
-                                        const [pHours, pMinutes] = nextPrayer.time.split(':').map(Number);
-                                        const tomorrow = new Date();
-                                        tomorrow.setDate(tomorrow.getDate() + 1);
-                                        tomorrow.setHours(pHours, pMinutes, 0, 0);
-                                        timeDiff = tomorrow - now;
-                                    }
+                                            // 2. COUNTDOWN STATE
+                                            if (!nextPrayer) {
+                                                nextPrayer = prayers[0];
+                                                const [pHours, pMinutes] = nextPrayer.time.split(':').map(Number);
+                                                const tomorrow = new Date();
+                                                tomorrow.setDate(tomorrow.getDate() + 1);
+                                                tomorrow.setHours(pHours, pMinutes, 0, 0);
+                                                timeDiff = tomorrow - now;
+                                            }
 
-                                    const totalSeconds = Math.floor(timeDiff / 1000);
-                                    const h = Math.floor(totalSeconds / 3600);
-                                    const m = Math.floor((totalSeconds % 3600) / 60);
-                                    const s = totalSeconds % 60;
-                                    const countdown = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                                            const totalSeconds = Math.floor(timeDiff / 1000);
+                                            const h = Math.floor(totalSeconds / 3600);
+                                            const m = Math.floor((totalSeconds % 3600) / 60);
+                                            const s = totalSeconds % 60;
+                                            const countdown = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 
-                                    return (
-                                        <motion.div
-                                            key="countdown-msg"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -20 }}
-                                            transition={{ duration: 0.5, ease: "easeOut" }}
-                                            className="flex items-center gap-4"
+                                            return (
+                                                <motion.div
+                                                    key="countdown-msg"
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -20 }}
+                                                    transition={{ duration: 0.5, ease: "easeOut" }}
+                                                    className="flex items-center gap-4"
+                                                >
+                                                    <span className="opacity-50 uppercase tracking-widest text-[10px]">Menuju Waktu Sholat</span>
+                                                    <div className="flex gap-2 font-medium items-center">
+                                                        <span className="text-amber-200 font-bold capitalize">{nextPrayer.name.toLowerCase()}</span>
+                                                        <span className="font-mono bg-vanilla/10 px-2 py-0.5 rounded text-xs">{countdown}</span>
+                                                        <span className="text-xs opacity-50">({nextPrayer.time})</span>
+                                                    </div>
+                                                </motion.div>
+                                            );
+                                        })()
+                                    ) : (
+                                        <motion.span
+                                            key="loading"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            className="animate-pulse"
                                         >
-                                            <span className="opacity-50 uppercase tracking-widest text-[10px]">Menuju Waktu Sholat</span>
-                                            <div className="flex gap-2 font-medium items-center">
-                                                <span className="text-amber-200 font-bold capitalize">{nextPrayer.name.toLowerCase()}</span>
-                                                <span className="font-mono bg-vanilla/10 px-2 py-0.5 rounded text-xs">{countdown}</span>
-                                                <span className="text-xs opacity-50">({nextPrayer.time})</span>
-                                            </div>
-                                        </motion.div>
-                                    );
-                                })()
-                            ) : (
-                                <motion.span
-                                    key="loading"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    className="animate-pulse"
-                                >
-                                    Memuat...
-                                </motion.span>
-                            )}
-                        </AnimatePresence>
-                    </div>
+                                            Memuat...
+                                        </motion.span>
+                                    )}
+                                </AnimatePresence>
+                            </div>
 
-                    {/* Adab Walimah (Center) */}
-                    <div className="hidden lg:flex items-center gap-2 flex-1 justify-center">
-                        <span className="text-vanilla/40">✨</span>
-                        <AnimatePresence mode="wait">
-                            <motion.span
-                                key={adabIndex}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="italic text-vanilla font-medium text-center min-w-[300px]"
-                            >
-                                {adabWalimah[adabIndex]}
-                            </motion.span>
-                        </AnimatePresence>
-                        <span className="text-vanilla/40">✨</span>
-                    </div>
+                            {/* Adab Walimah (Center) */}
+                            <div className="hidden lg:flex items-center gap-2 flex-1 justify-center">
+                                <span className="text-vanilla/40">✨</span>
+                                <AnimatePresence mode="wait">
+                                    <motion.span
+                                        key={adabIndex}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="italic text-vanilla font-medium text-center min-w-[300px]"
+                                    >
+                                        {adabWalimah[adabIndex]}
+                                    </motion.span>
+                                </AnimatePresence>
+                                <span className="text-vanilla/40">✨</span>
+                            </div>
 
-                    {/* Realtime Clock */}
-                    <div className="flex items-center gap-2 font-mono text-base font-bold bg-black/20 px-3 py-1 rounded-lg border border-vanilla/10">
-                        <span>{formatTime(currentTime)}</span>
-                        <span className="text-[10px] font-dm-sans font-normal opacity-60">WIB</span>
-                    </div>
-                </div>
-            </footer>
+                            {/* Realtime Clock */}
+                            <div className="flex items-center gap-2 font-mono text-base font-bold bg-black/20 px-3 py-1 rounded-lg border border-vanilla/10">
+                                <span>{formatTime(currentTime)}</span>
+                                <span className="text-[10px] font-dm-sans font-normal opacity-60">WIB</span>
+                            </div>
+                        </motion.div>
+                    </motion.footer>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
