@@ -175,14 +175,17 @@ const NewWishPopup = ({ wish, onComplete }) => {
 };
 
 // --- vertical Marquee Component ---
-const VerticalMarqueeColumn = ({ items, speed = 50, className = "", highlightedIds = new Set() }) => {
+const VerticalMarqueeColumn = React.memo(({ items, speed = 50, className = "", highlightedIds = new Set() }) => {
     const [contentHeight, setContentHeight] = useState(0);
     const containerRef = useRef(null);
 
-    // If very few items, duplicate more to ensure smooth scroll
-    const MIN_ITEMS = 6;
-    const repeatCount = items.length < MIN_ITEMS ? Math.ceil(MIN_ITEMS / Math.max(1, items.length)) * 2 : 2;
-    const duplicatedItems = Array(repeatCount).fill(items).flat();
+    // Memoize the duplicated items based on the input items 
+    // This prevents re-creation on every render if items haven't changed
+    const duplicatedItems = React.useMemo(() => {
+        const MIN_ITEMS = 6;
+        const repeatCount = items.length < MIN_ITEMS ? Math.ceil(MIN_ITEMS / Math.max(1, items.length)) * 2 : 2;
+        return Array(repeatCount).fill(items).flat();
+    }, [items]);
 
     useEffect(() => {
         if (containerRef.current) {
@@ -249,7 +252,7 @@ const VerticalMarqueeColumn = ({ items, speed = 50, className = "", highlightedI
             </motion.div>
         </div>
     );
-};
+});
 
 
 const WishesPage = () => {
@@ -353,9 +356,9 @@ const WishesPage = () => {
         }
     }, [currentPopup, popupQueue]);
 
-    const handlePopupComplete = () => {
+    const handlePopupComplete = React.useCallback(() => {
         setCurrentPopup(null);
-    };
+    }, []);
 
     const fetchWishes = async () => {
         try {
@@ -374,16 +377,14 @@ const WishesPage = () => {
         }
     };
 
-    // Split wishes into 3 balanced columns
-    const getColumns = () => {
+    // Split wishes into 3 balanced columns - MEMOIZED
+    const columns = React.useMemo(() => {
         const cols = [[], [], []];
         wishes.forEach((wish, i) => {
             cols[i % 3].push(wish);
         });
         return cols;
-    };
-
-    const columns = getColumns();
+    }, [wishes]);
 
     return (
         <div className="h-screen w-screen bg-main-red text-vanilla selection:bg-accent-wine selection:text-vanilla overflow-hidden relative flex flex-col">
