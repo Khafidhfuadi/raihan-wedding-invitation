@@ -11,6 +11,7 @@ import Wishes from './components/Wishes';
 import Closing from './components/Closing';
 import LoadingScreen from './components/LoadingScreen';
 import GuestManager from './pages/GuestManager';
+import ReservationBook from './pages/ReservationBook';
 import WishesPage from './pages/WishesPage';
 import LeaveWishPage from './pages/LeaveWishPage';
 import backsound from './assets/audio/backsound.mp3';
@@ -213,6 +214,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainApp />} />
         <Route path="/manage-guests" element={<GuestManager />} />
+        <Route path="/buku-tamu" element={<ReservationBook />} />
         <Route path="/wishes" element={<WishesPage />} />
         <Route path="/kirim-ucapan" element={<LeaveWishPage />} />
       </Routes>
