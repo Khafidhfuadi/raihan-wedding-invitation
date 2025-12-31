@@ -9,7 +9,7 @@ import decorRight from '../assets/decor-right.webp';
 const Particle = ({ delay }) => {
     const randomX = Math.random() * 100;
     const randomY = Math.random() * 100;
-    const randomSize = Math.random() * 4 + 1;
+    const randomSize = Math.random() * 6 + 4; // Further increased size range (4-10px)
     const duration = Math.random() * 20 + 10;
 
     return (
@@ -17,7 +17,7 @@ const Particle = ({ delay }) => {
             initial={{ x: `${randomX}vw`, y: `110vh`, opacity: 0 }}
             animate={{
                 y: `-10vh`,
-                opacity: [0, 0.5, 0],
+                opacity: [0, 0.9, 0], // Increased max opacity to nearly full
                 x: [`${randomX}vw`, `${randomX + (Math.random() * 10 - 5)}vw`]
             }}
             transition={{
@@ -26,11 +26,11 @@ const Particle = ({ delay }) => {
                 delay: delay,
                 ease: "linear"
             }}
-            className="absolute bg-vanilla rounded-full pointer-events-none"
+            className="absolute bg-vanilla rounded-full pointer-events-none shadow-[0_0_15px_rgba(255,253,208,0.7)]" // Enhanced glow
             style={{
                 width: randomSize,
                 height: randomSize,
-                filter: 'blur(1px)'
+                filter: 'blur(0.2px)' // Minimal blur for sharpness
             }}
         />
     );
@@ -38,7 +38,7 @@ const Particle = ({ delay }) => {
 
 const ParticleBackground = () => (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        {[...Array(30)].map((_, i) => (
+        {[...Array(100)].map((_, i) => ( // Increased count to 100
             <Particle key={i} delay={Math.random() * 20} />
         ))}
     </div>
@@ -372,6 +372,7 @@ const WishesPage = () => {
                             Kumpulan doa dan harapan untuk Raihan & Fadhil
                         </p>
                         <div className="text-4xl font-pinyon text-vanilla/40 mt-1">#RaihanFadhilWedding</div>
+                        <div className="font-dm-sans text-xs text-vanilla/30 tracking-[0.2em] mt-2 uppercase">10 Januari 2025</div>
                     </div>
                 </header>
             </div>

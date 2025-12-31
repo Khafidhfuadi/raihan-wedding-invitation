@@ -12,6 +12,7 @@ import Closing from './components/Closing';
 import LoadingScreen from './components/LoadingScreen';
 import GuestManager from './pages/GuestManager';
 import WishesPage from './pages/WishesPage';
+import LeaveWishPage from './pages/LeaveWishPage';
 import backsound from './assets/audio/backsound.mp3';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -213,6 +214,7 @@ function App() {
         <Route path="/" element={<MainApp />} />
         <Route path="/manage-guests" element={<GuestManager />} />
         <Route path="/wishes" element={<WishesPage />} />
+        <Route path="/kirim-ucapan" element={<LeaveWishPage />} />
       </Routes>
     </Router>
   );
