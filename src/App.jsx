@@ -11,6 +11,7 @@ import Wishes from './components/Wishes';
 import Closing from './components/Closing';
 import LoadingScreen from './components/LoadingScreen';
 import GuestManager from './pages/GuestManager';
+import WishesPage from './pages/WishesPage';
 import backsound from './assets/audio/backsound.mp3';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -211,6 +212,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainApp />} />
         <Route path="/manage-guests" element={<GuestManager />} />
+        <Route path="/wishes" element={<WishesPage />} />
       </Routes>
     </Router>
   );
