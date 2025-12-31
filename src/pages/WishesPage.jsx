@@ -260,13 +260,7 @@ const WishesPage = () => {
     const [currentPopup, setCurrentPopup] = useState(null);
     const [highlightedIds, setHighlightedIds] = useState(new Set());
 
-    // Spotlight State
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-    const handleMouseMove = (e) => {
-        const { clientX, clientY } = e;
-        setMousePosition({ x: clientX, y: clientY });
-    };
 
     // Footer States
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -393,17 +387,7 @@ const WishesPage = () => {
     }, [wishes]);
 
     return (
-        <div
-            onMouseMove={handleMouseMove}
-            className="h-screen w-screen bg-main-red text-vanilla selection:bg-accent-wine selection:text-vanilla overflow-hidden relative flex flex-col"
-        >
-            {/* Spotlight Overlay */}
-            <div
-                className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
-                style={{
-                    background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,0.06), transparent 40%)`
-                }}
-            />
+        <div className="h-screen w-screen bg-main-red text-vanilla selection:bg-accent-wine selection:text-vanilla overflow-hidden relative flex flex-col">
 
             {/* Realtime Popup */}
             <AnimatePresence>
