@@ -6,19 +6,22 @@ import decorLeft from '../assets/decor-left.webp';
 import decorRight from '../assets/decor-right.webp';
 
 // --- Particle Components ---
-const Particle = ({ delay }) => {
-    const randomX = Math.random() * 100;
-    const randomY = Math.random() * 100;
-    const randomSize = Math.random() * 6 + 4; // Further increased size range (4-10px)
-    const duration = Math.random() * 20 + 10;
+const Particle = React.memo(({ delay }) => {
+    // Memoize random values to strictly prevent regeneration on re-renders
+    const { randomX, randomSize, duration, xVariation } = React.useMemo(() => ({
+        randomX: Math.random() * 100,
+        randomSize: Math.random() * 6 + 4,
+        duration: Math.random() * 20 + 10,
+        xVariation: Math.random() * 10 - 5
+    }), []);
 
     return (
         <motion.div
             initial={{ x: `${randomX}vw`, y: `110vh`, opacity: 0 }}
             animate={{
                 y: `-10vh`,
-                opacity: [0, 0.9, 0], // Increased max opacity to nearly full
-                x: [`${randomX}vw`, `${randomX + (Math.random() * 10 - 5)}vw`]
+                opacity: [0, 0.9, 0],
+                x: [`${randomX}vw`, `${randomX + xVariation}vw`]
             }}
             transition={{
                 duration: duration,
@@ -26,23 +29,23 @@ const Particle = ({ delay }) => {
                 delay: delay,
                 ease: "linear"
             }}
-            className="absolute bg-vanilla rounded-full pointer-events-none shadow-[0_0_15px_rgba(255,253,208,0.7)]" // Enhanced glow
+            className="absolute bg-vanilla rounded-full pointer-events-none shadow-[0_0_15px_rgba(255,253,208,0.7)]"
             style={{
                 width: randomSize,
                 height: randomSize,
-                filter: 'blur(0.2px)' // Minimal blur for sharpness
+                filter: 'blur(0.2px)'
             }}
         />
     );
-};
+});
 
-const ParticleBackground = () => (
+const ParticleBackground = React.memo(() => (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        {[...Array(100)].map((_, i) => ( // Increased count to 100
+        {[...Array(100)].map((_, i) => (
             <Particle key={i} delay={Math.random() * 20} />
         ))}
     </div>
-);
+));
 
 // --- Relative Time Helper ---
 const getRelativeTime = (dateString) => {
@@ -256,6 +259,55 @@ const WishesPage = () => {
     const [currentPopup, setCurrentPopup] = useState(null);
     const [highlightedIds, setHighlightedIds] = useState(new Set());
 
+    // Footer States
+    const [currentTime, setCurrentTime] = useState(new Date());
+    const [prayerTimes, setPrayerTimes] = useState(null);
+    const [adabIndex, setAdabIndex] = useState(0);
+
+    const adabWalimah = [
+        "Memakai pakaian yang sopan dan menutup aurat",
+        "Memperhatikan waktu sholat",
+        "Mendoakan kedua mempelai",
+        "Dilarang merokok",
+        "Makan & minum sambil duduk",
+        "Dilarang mengambil foto tanpa seizin kedua mempelai"
+    ];
+
+    // Clock Timer
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // Adab Rotator
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setAdabIndex((prev) => (prev + 1) % adabWalimah.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // Fetch Prayer Times (Client-side)
+    useEffect(() => {
+        const fetchPrayerTimes = async () => {
+            try {
+                const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Jakarta&country=Indonesia&method=20');
+                const data = await res.json();
+                if (data && data.data && data.data.timings) {
+                    setPrayerTimes(data.data.timings);
+                }
+            } catch (error) {
+                console.error('Error fetching prayer times:', error);
+            }
+        };
+        fetchPrayerTimes();
+    }, []);
+
+    // Formatted Time Helper
+    const formatTime = (date) => {
+        return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace('.', ':');
+    };
+
     useEffect(() => {
         fetchWishes();
 
@@ -399,6 +451,103 @@ const WishesPage = () => {
                     )
                 )}
             </div>
+            {/* Sticky Footer */}
+            <footer className="fixed bottom-0 left-0 right-0 z-50 bg-main-red/90 backdrop-blur-md border-t border-vanilla/10 py-3 px-6 shadow-2xl">
+                <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-vanilla/80 font-dm-sans text-sm">
+                    {/* Prayer Times */}
+                    <div className="flex items-center gap-4 text-xs md:text-sm overflow-x-auto max-w-full no-scrollbar whitespace-nowrap">
+                        <span className="opacity-50 uppercase tracking-widest text-[10px]">Menuju Waktu Sholat</span>
+                        {prayerTimes ? (
+                            (() => {
+                                const prayers = [
+                                    { name: 'Subuh', time: prayerTimes.Fajr },
+                                    { name: 'Dzuhur', time: prayerTimes.Dhuhr },
+                                    { name: 'Ashar', time: prayerTimes.Asr },
+                                    { name: 'Maghrib', time: prayerTimes.Maghrib },
+                                    { name: 'Isya', time: prayerTimes.Isha },
+                                ];
+
+                                const now = new Date();
+                                const currentHours = now.getHours();
+                                const currentMinutes = now.getMinutes();
+                                const currentSeconds = now.getSeconds();
+
+                                let nextPrayer = null;
+                                let timeDiff = Infinity;
+
+                                for (const prayer of prayers) {
+                                    const [pHours, pMinutes] = prayer.time.split(':').map(Number);
+                                    const prayerDate = new Date();
+                                    prayerDate.setHours(pHours, pMinutes, 0, 0);
+
+                                    let diff = prayerDate - now;
+                                    if (diff < 0) {
+                                        // If prayer passed today, consider it for tomorrow (simplied logic here, mostly we just look forward)
+                                        // But for proper "next", if all passed, the first one tomorrow is next.
+                                        // Let's keep it simple: find first one > 0. If none, it's Subuh tomorrow.
+                                        continue;
+                                    }
+
+                                    if (diff < timeDiff) {
+                                        timeDiff = diff;
+                                        nextPrayer = prayer;
+                                    }
+                                }
+
+                                // If no prayer found later today, next is Subuh tomorrow
+                                if (!nextPrayer) {
+                                    nextPrayer = prayers[0];
+                                    const [pHours, pMinutes] = nextPrayer.time.split(':').map(Number);
+                                    const tomorrow = new Date();
+                                    tomorrow.setDate(tomorrow.getDate() + 1);
+                                    tomorrow.setHours(pHours, pMinutes, 0, 0);
+                                    timeDiff = tomorrow - now;
+                                }
+
+                                // Format Countdown
+                                const totalSeconds = Math.floor(timeDiff / 1000);
+                                const h = Math.floor(totalSeconds / 3600);
+                                const m = Math.floor((totalSeconds % 3600) / 60);
+                                const s = totalSeconds % 60;
+                                const countdown = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+                                return (
+                                    <div className="flex gap-2 font-medium items-center">
+                                        <span className="text-amber-200 font-bold">{nextPrayer.name}</span>
+                                        <span className="font-mono bg-vanilla/10 px-2 py-0.5 rounded text-xs">{countdown}</span>
+                                        <span className="text-xs opacity-50">({nextPrayer.time})</span>
+                                    </div>
+                                );
+                            })()
+                        ) : (
+                            <span className="animate-pulse">Memuat...</span>
+                        )}
+                    </div>
+
+                    {/* Adab Walimah (Center) */}
+                    <div className="hidden lg:flex items-center gap-2 flex-1 justify-center">
+                        <span className="text-vanilla/40">✨</span>
+                        <AnimatePresence mode="wait">
+                            <motion.span
+                                key={adabIndex}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="italic text-vanilla font-medium text-center min-w-[300px]"
+                            >
+                                {adabWalimah[adabIndex]}
+                            </motion.span>
+                        </AnimatePresence>
+                        <span className="text-vanilla/40">✨</span>
+                    </div>
+
+                    {/* Realtime Clock */}
+                    <div className="flex items-center gap-2 font-mono text-base font-bold bg-black/20 px-3 py-1 rounded-lg border border-vanilla/10">
+                        <span>{formatTime(currentTime)}</span>
+                        <span className="text-[10px] font-dm-sans font-normal opacity-60">WIB</span>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 };
