@@ -108,6 +108,60 @@ const ReservationBook = () => {
         guest.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // --- Add Guest Logic ---
+    const [showAddGuestModal, setShowAddGuestModal] = useState(false);
+    const [newGuestName, setNewGuestName] = useState('');
+    const [newGuestCategory, setNewGuestCategory] = useState('mempelai');
+    const [newGuestPax, setNewGuestPax] = useState(1);
+
+    const openAddGuestModal = () => {
+        setNewGuestName(searchQuery); // Pre-fill with search query
+        setNewGuestPax(1);
+        setNewGuestCategory('mempelai');
+        setShowAddGuestModal(true);
+    };
+
+    const generateSlug = (name) => {
+        return name
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '+');
+    };
+
+    const handleAddNewGuest = async () => {
+        if (!newGuestName.trim()) return;
+
+        // 1. Check if name exists locally to prevent slight duplicates if possible? 
+        // We already did a search, so user knows.
+
+        try {
+            const slug = generateSlug(newGuestName);
+            const { data, error } = await supabase
+                .from('guests')
+                .insert([{
+                    name: newGuestName,
+                    slug: slug,
+                    category: newGuestCategory,
+                    attendance_status: 'hadir', // Auto check-in
+                    pax: newGuestPax,
+                    updated_at: new Date()
+                }])
+                .select();
+
+            if (error) throw error;
+
+            setNotification({ type: 'success', message: `Tamu baru berhasil ditambahkan: ${newGuestName}` });
+            setShowAddGuestModal(false);
+            setSearchQuery(''); // Clear search to show recent list or all
+            fetchGuests();
+        } catch (error) {
+            console.error('Error adding new guest:', error);
+            setNotification({ type: 'error', message: 'Gagal menambahkan tamu baru.' });
+        } finally {
+            setTimeout(() => setNotification(null), 3000);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-vanilla p-6 md:p-12 font-dm-sans text-main-red">
             <div className="max-w-5xl mx-auto">
@@ -181,16 +235,25 @@ const ReservationBook = () => {
                                 Loading data tamu...
                             </div>
                         ) : filteredGuests.length === 0 ? (
-                            <div className="col-span-full py-12 text-center text-main-red/50 text-lg">
-                                Tidak ditemukan tamu dengan nama "{searchQuery}"
+                            <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
+                                <p className="text-main-red/50 text-lg mb-4">Tidak ditemukan tamu dengan nama "{searchQuery}"</p>
+                                {searchQuery && (
+                                    <button
+                                        onClick={openAddGuestModal}
+                                        className="px-6 py-3 bg-accent-wine text-vanilla font-bold rounded-lg hover:bg-main-red transition-all shadow-lg flex items-center gap-2"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                        Tambah Tamu Baru: "{searchQuery}"
+                                    </button>
+                                )}
                             </div>
                         ) : (
                             filteredGuests.map((guest) => (
                                 <div
                                     key={guest.id}
                                     className={`relative p-5 rounded-xl border transition-all duration-200 ${guest.attendance_status === 'hadir'
-                                            ? 'bg-green-50 border-green-200 shadow-sm'
-                                            : 'bg-white border-main-red/10 hover:border-accent-wine/50 hover:shadow-md'
+                                        ? 'bg-green-50 border-green-200 shadow-sm'
+                                        : 'bg-white border-main-red/10 hover:border-accent-wine/50 hover:shadow-md'
                                         }`}
                                 >
                                     <div className="flex justify-between items-start mb-3">
@@ -213,6 +276,11 @@ const ReservationBook = () => {
                                                 <div className="flex-1">
                                                     <p className="text-xs text-green-700 font-bold uppercase tracking-wider mb-1">Sudah Hadir</p>
                                                     <p className="text-sm font-bold">{guest.pax} Orang</p>
+                                                    {guest.updated_at && (
+                                                        <p className="text-[10px] text-main-red/50 mt-1">
+                                                            {new Date(guest.updated_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                        </p>
+                                                    )}
                                                 </div>
                                                 <button
                                                     onClick={() => handleCancelCheckIn(guest)}
@@ -242,6 +310,104 @@ const ReservationBook = () => {
                         )}
                     </div>
                 </div>
+
+                {/* Add New Guest Modal */}
+                <AnimatePresence>
+                    {showAddGuestModal && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                className="bg-vanilla text-main-red w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border-2 border-accent-wine"
+                            >
+                                <div className="bg-accent-wine p-6 text-center">
+                                    <h2 className="text-vanilla text-2xl font-pinyon">Tambah Tamu & Check-In</h2>
+                                </div>
+                                <div className="p-8">
+                                    <div className="mb-6">
+                                        <label className="block text-sm font-bold mb-2">Nama Tamu</label>
+                                        <input
+                                            type="text"
+                                            value={newGuestName}
+                                            onChange={(e) => setNewGuestName(e.target.value)}
+                                            className="w-full px-4 py-2 border border-main-red/20 rounded-lg focus:border-accent-wine outline-none bg-white/50"
+                                            placeholder="Nama Tamu"
+                                        />
+                                    </div>
+
+                                    <div className="mb-6">
+                                        <label className="block text-sm font-bold mb-2">Kategori</label>
+                                        <div className="flex gap-4">
+                                            <label className="flex items-center gap-2 cursor-pointer bg-white/50 px-4 py-2 rounded-lg border border-main-red/10 flex-1 hover:border-accent-wine">
+                                                <input
+                                                    type="radio"
+                                                    name="newGuestCategory"
+                                                    value="mempelai"
+                                                    checked={newGuestCategory === 'mempelai'}
+                                                    onChange={(e) => setNewGuestCategory(e.target.value)}
+                                                    className="accent-accent-wine"
+                                                />
+                                                <span className="text-sm">Tamu Mempelai</span>
+                                            </label>
+                                            <label className="flex items-center gap-2 cursor-pointer bg-white/50 px-4 py-2 rounded-lg border border-main-red/10 flex-1 hover:border-accent-wine">
+                                                <input
+                                                    type="radio"
+                                                    name="newGuestCategory"
+                                                    value="orangtua"
+                                                    checked={newGuestCategory === 'orangtua'}
+                                                    onChange={(e) => setNewGuestCategory(e.target.value)}
+                                                    className="accent-accent-wine"
+                                                />
+                                                <span className="text-sm">Tamu Ortu</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-8">
+                                        <label className="block text-center text-sm font-bold mb-4">Jumlah Orang (Pax)</label>
+                                        <div className="flex items-center justify-center gap-4">
+                                            <button
+                                                onClick={() => setNewGuestPax(Math.max(1, newGuestPax - 1))}
+                                                className="w-12 h-12 rounded-full border-2 border-main-red/20 flex items-center justify-center text-xl hover:bg-main-red/5 active:bg-main-red/10 transition-colors"
+                                            >
+                                                -
+                                            </button>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                value={newGuestPax}
+                                                onChange={(e) => setNewGuestPax(parseInt(e.target.value) || 1)}
+                                                className="w-24 text-center text-4xl font-bold bg-transparent outline-none border-b-2 border-main-red/20 focus:border-accent-wine"
+                                            />
+                                            <button
+                                                onClick={() => setNewGuestPax(newGuestPax + 1)}
+                                                className="w-12 h-12 rounded-full border-2 border-main-red/20 flex items-center justify-center text-xl hover:bg-main-red/5 active:bg-main-red/10 transition-colors"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => setShowAddGuestModal(false)}
+                                            className="flex-1 py-3 text-main-red font-bold rounded-xl hover:bg-black/5 transition-colors"
+                                        >
+                                            Batal
+                                        </button>
+                                        <button
+                                            onClick={handleAddNewGuest}
+                                            className="flex-1 py-3 bg-accent-wine text-vanilla font-bold rounded-xl shadow-lg hover:bg-main-red transition-all active:scale-95"
+                                        >
+                                            Simpan & Check-In
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
 
                 {/* Check-in Modal */}
                 <AnimatePresence>
