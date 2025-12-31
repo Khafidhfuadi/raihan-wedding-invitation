@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const ReservationBook = () => {
     const [guests, setGuests] = useState([]);
@@ -114,9 +115,18 @@ const ReservationBook = () => {
         }
     };
 
-    const filteredGuests = guests.filter(guest =>
-        guest.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const [filterCategory, setFilterCategory] = useState('all');
+    const [filterStatus, setFilterStatus] = useState('all');
+
+    const filteredGuests = guests.filter(guest => {
+        const matchesSearch = guest.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = filterCategory === 'all' || guest.category === filterCategory;
+        const matchesStatus = filterStatus === 'all' ||
+            (filterStatus === 'hadir' && guest.attendance_status === 'hadir') ||
+            (filterStatus === 'belum_hadir' && guest.attendance_status !== 'hadir');
+
+        return matchesSearch && matchesCategory && matchesStatus;
+    });
 
     // --- Add Guest Logic ---
     const [showAddGuestModal, setShowAddGuestModal] = useState(false);
@@ -178,9 +188,24 @@ const ReservationBook = () => {
                 <header className="mb-10">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
                         <div>
-                            <h1 className="font-pinyon text-5xl mb-2 text-accent-wine">Buku Tamu</h1>
+                            <div className="mb-6 border-b border-main-red/10 pb-6">
+                                <p className="text-xs font-bold tracking-[0.2em] text-main-red/40 uppercase mb-2">The Wedding of</p>
+                                <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-4">
+                                    <h2 className="text-3xl font-bold text-main-red">Raihan & Fadhil</h2>
+                                    <div className="hidden md:block w-px h-6 bg-main-red/20"></div>
+                                    <p className="text-main-red/60 font-medium flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                        Sabtu, 10 Januari 2026
+                                    </p>
+                                </div>
+                            </div>
+                            <h1 className="font-pinyon text-6xl mb-2 text-accent-wine">Buku Tamu</h1>
                             <p className="text-main-red/60 text-lg">Dashboard Resepsionis</p>
                         </div>
+                        <Link to="/manage-guests" className="px-4 py-2 bg-white/50 border border-main-red/20 rounded-lg text-sm font-bold text-main-red hover:bg-white hover:shadow-sm transition-all flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            Kelola Data Tamu
+                        </Link>
                     </div>
 
                     {/* Analytics Cards */}
@@ -263,19 +288,44 @@ const ReservationBook = () => {
                     )}
                 </AnimatePresence>
 
-                {/* Search Bar */}
-                <div className="sticky top-6 z-30 mb-8">
-                    <div className="relative">
-                        <input
-                            type="text"
-                            placeholder="Cari Nama Tamu..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full px-6 py-4 text-lg rounded-xl border border-main-red/20 shadow-lg focus:ring-2 focus:ring-accent-wine focus:border-accent-wine outline-none bg-white/90 backdrop-blur-md"
-                            autoFocus
-                        />
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-main-red/40">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                {/* Filter and Search Bar */}
+                <div className="sticky top-6 z-30 mb-8 space-y-3">
+                    <div className="flex flex-col md:flex-row gap-3">
+                        {/* Search */}
+                        <div className="relative flex-1">
+                            <input
+                                type="text"
+                                placeholder="Cari Nama Tamu..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full px-6 py-3 text-lg rounded-xl border border-main-red/20 shadow-lg focus:ring-2 focus:ring-accent-wine focus:border-accent-wine outline-none bg-white/90 backdrop-blur-md"
+                            />
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-main-red/40">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            </div>
+                        </div>
+
+                        {/* Filters */}
+                        <div className="flex gap-2">
+                            <select
+                                value={filterStatus}
+                                onChange={(e) => setFilterStatus(e.target.value)}
+                                className="px-4 py-3 rounded-xl border border-main-red/20 shadow-lg focus:ring-2 focus:ring-accent-wine outline-none bg-white/90 backdrop-blur-md font-bold text-main-red/80 cursor-pointer"
+                            >
+                                <option value="all">Semua Status</option>
+                                <option value="hadir">Sudah Hadir</option>
+                                <option value="belum_hadir">Belum Hadir</option>
+                            </select>
+
+                            <select
+                                value={filterCategory}
+                                onChange={(e) => setFilterCategory(e.target.value)}
+                                className="px-4 py-3 rounded-xl border border-main-red/20 shadow-lg focus:ring-2 focus:ring-accent-wine outline-none bg-white/90 backdrop-blur-md font-bold text-main-red/80 cursor-pointer"
+                            >
+                                <option value="all">Semua Kategori</option>
+                                <option value="mempelai">Mempelai</option>
+                                <option value="orangtua">Orang Tua</option>
+                            </select>
                         </div>
                     </div>
                 </div>
